@@ -9,6 +9,7 @@ Group:		Applications
 Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
 # Source0-md5:	f97aefed2fddd2353343a716d9c646c6
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
+BuildRequires:	glib2-devel >= 1:2.4.0
 BuildRequires:	libevent-devel
 BuildRequires:	lua51-devel
 BuildRequires:	mysql-devel
