@@ -11,6 +11,7 @@ Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	libevent-devel
 BuildRequires:	lua51-devel
+BuildRequires:	mysql-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
