@@ -1,6 +1,7 @@
 # TODO
 # - initscript probably
 Summary:	MySQL Proxy
+Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.5.0
 Release:	0.1
@@ -21,6 +22,14 @@ MySQL server(s) that can monitor, analyze or transform their
 communication. Its flexibility allows for unlimited uses; common ones
 include: load balancing; failover; query analysis; query filtering and
 modification; and many more.
+
+%description -l pl.UTF-8
+MySQL Proxy to prosty program tkwiący między klienten a
+serwerem/serwerami MySQL, potrafiący monitorować, analizować i
+przekształcać ich komunikację. Jego elastyczność pozwala na
+nieograniczone wykorzystanie; popularne sposoby użycia obejmują:
+load balancing, failover, analizę zapytań, filtrowanie i modyfikowanie
+zapytań... i wiele więcej.
 
 %prep
 %setup -q -n %{name}-%{version}r8
