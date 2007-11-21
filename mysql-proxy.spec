@@ -17,6 +17,7 @@ Patch0:		%{name}-lua.patch
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	autoconf
 BuildRequires:	automake
+%{?with_tests:BuildRequires:	check}
 BuildRequires:	glib2-devel >= 1:2.4.0
 BuildRequires:	libevent-devel
 BuildRequires:	lua51-devel
@@ -44,7 +45,7 @@ zapytań... i wiele więcej.
 %patch0 -p1
 
 %build
-%{__aclocal}
+%{__aclocal} -I m4
 %{__autoconf}
 %{__autoheader}
 %{__automake}
