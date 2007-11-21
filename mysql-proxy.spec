@@ -3,12 +3,12 @@
 Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
-Version:	0.5.0
+Version:	0.6.0
 Release:	0.1
 License:	GPL
 Group:		Applications
 Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
-# Source0-md5:	f97aefed2fddd2353343a716d9c646c6
+# Source0-md5:	b76ad6f059f78b9aaca49c8c29cb2719
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	glib2-devel >= 1:2.4.0
 BuildRequires:	libevent-devel
@@ -27,12 +27,12 @@ modification; and many more.
 MySQL Proxy to prosty program tkwiący między klienten a
 serwerem/serwerami MySQL, potrafiący monitorować, analizować i
 przekształcać ich komunikację. Jego elastyczność pozwala na
-nieograniczone wykorzystanie; popularne sposoby użycia obejmują:
-load balancing, failover, analizę zapytań, filtrowanie i modyfikowanie
+nieograniczone wykorzystanie; popularne sposoby użycia obejmują: load
+balancing, failover, analizę zapytań, filtrowanie i modyfikowanie
 zapytań... i wiele więcej.
 
 %prep
-%setup -q -n %{name}-%{version}r8
+%setup -q
 
 %build
 %configure \
@@ -44,6 +44,9 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+# put those to -tutorial package
+rm -f $RPM_BUILD_ROOT%{_datadir}/*.lua
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -51,3 +54,4 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README THANKS
 %attr(755,root,root) %{_sbindir}/mysql-proxy
+%{_datadir}/%{name}
