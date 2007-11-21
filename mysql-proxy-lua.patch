@@ -5,7 +5,7 @@
  	LUA_CPATH=".libs/?.so" \
  	builddir=${top_builddir} \
 -	lua ${srcdir}/run-tests.lua
-+	lua5.1 ${srcdir}/run-tests.lua
++	lua51 ${srcdir}/run-tests.lua
  
  TESTS=base
  
