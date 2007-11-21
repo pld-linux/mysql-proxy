@@ -2,7 +2,7 @@
 # - initscript probably
 #
 # Conditional build:
-%bcond_without	tests		# build without tests
+%bcond_with	tests		# build with tests. needs mysql server on localhost:3306
 #
 Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
@@ -17,12 +17,14 @@ Patch0:		%{name}-lua.patch
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	autoconf
 BuildRequires:	automake
-%{?with_tests:BuildRequires:	check}
 BuildRequires:	glib2-devel >= 1:2.4.0
 BuildRequires:	libevent-devel
 BuildRequires:	lua51-devel
-%{?with_tests:BuildRequires:	lua51}
 BuildRequires:	mysql-devel
+%if %{with tests}
+BuildRequires:	check
+BuildRequires:	lua51
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -52,7 +54,15 @@ zapytań... i wiele więcej.
 %configure \
 	--with-lua=lua51
 %{__make}
-%{?with_tests:%{__make} check}
+
+%if %{with tests}
+export MYSQL_USER=mysql
+export MYSQL_PASSWORD=
+export MYSQL_HOST=localhost
+export MYSQL_PORT=3306
+export MYSQL_DB=test
+%{__make} -C tests/suite check
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
