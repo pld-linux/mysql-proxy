@@ -32,7 +32,7 @@ start() {
 	if [ ! -f /var/lock/subsys/mysql-proxy ]; then
 		msg_starting "MySQL Proxy"
 		local args=${LUA_SCRIPT:+--proxy-lua-script="$LUA_SCRIPT"}
-		daemon /usr/sbin/mysql-proxy --pid-file=/var/run/mysql-proxy.pid $args
+		daemon /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy.pid $args
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
 	else
@@ -77,7 +77,6 @@ case "$1" in
 	;;
   reload)
   	reload
-	;;
 	;;
   status)
 	status mysql-proxy
