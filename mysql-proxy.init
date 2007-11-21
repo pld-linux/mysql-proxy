@@ -1,80 +1,91 @@
-#! /bin/sh
-# Copyright (c) 2007 Novell Inc / SUSE Linux AG, Nuernberg, Germany.
-# All rights reserved.
+#!/bin/sh
 #
-# Author: Peter Poeml <poeml@suse.de>
+# mysql-proxy	MySQL Proxy
 #
-### BEGIN INIT INFO
-# Provides:                     mysql-proxy
-# Required-Start:               $local_fs $remote_fs $network
-# Should-Start:                 $named $time amavis
-# Required-Stop:
-# Default-Start:                3 5
-# Default-Stop:                 0 1 2 6
-# Short-Description:            MySQL Proxy
-# Description:                  Start the MySQL Proxy
-### END INIT INFO
+# chkconfig:	2345 85 24
+#
+# description:	MySQL Proxy
+#
+# $Id$
 
-if [ -s /etc/sysconfig/mysql-proxy ]; then
+# Source function library
+. /etc/rc.d/init.d/functions
 
-        . /etc/sysconfig/mysql-proxy
+# Get network config
+. /etc/sysconfig/network
+
+# Get service config - may override defaults
+[ -f /etc/sysconfig/mysql-proxy ] && . /etc/sysconfig/mysql-proxy
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
+		msg_network_down mysql-proxy
+		exit 1
+	fi
+else
+	exit 0
 fi
 
-: ${MYSQL_PROXY_BIN:=/usr/sbin/mysql-proxy}
-: ${MYSQL_PROXY_PID:=/var/run/mysql-proxy.pid}
+start() {
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/mysql-proxy ]; then
+		msg_starting "MySQL Proxy"
+		local args=${LUA_SCRIPT:+--proxy-lua-script="$LUA_SCRIPT"}
+		daemon /usr/sbin/mysql-proxy --pid-file=/var/run/mysql-proxy.pid $args
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
+	else
+		msg_already_running "MySQL Proxy"
+	fi
+}
 
-: ${MYSQL_PROXY_LUA_PATH:=/usr/share/mysql-proxy/?.lua}
-export LUA_PATH="$MYSQL_PROXY_LUA_PATH"
+stop() {
+	if [ -f /var/lock/subsys/mysql-proxy ]; then
+		# Stop daemons.
+		msg_stopping "MySQL Proxy"
+		killproc --pidfile /var/run/mysql-proxy.pid mysql-proxy
+		rm -f /var/lock/subsys/mysql-proxy
+	else
+		msg_not_running "MySQL Proxy"
+	fi
+}
 
-. /etc/rc.status
-rc_reset
+reload() {
+	if [ -f /var/lock/subsys/mysql-proxy ]; then
+		msg_reloading "MySQL Proxy"
+		killproc --pidfile /var/run/mysql-proxy.pid mysql-proxy -HUP
+		RETVAL=$?
+	else
+		msg_not_running "MySQL Proxy"
+		RETVAL=7
+	fi
+}
 
+RETVAL=0
+# See how we were called.
 case "$1" in
-    start)
-        echo -n "Starting service MySQL Proxy"
-        startproc -p $MYSQL_PROXY_PID $MYSQL_PROXY_BIN --pid-file $MYSQL_PROXY_PID $MYSQL_PROXY_ARGS
-        rc_status -v
-        ;;
-    stop)
-        echo -n "Shutting down service MySQL Proxy"
-        killproc -p $MYSQL_PROXY_PID -TERM $MYSQL_PROXY_BIN
-        rc_status -v
-        ;;
-    try-restart)
-        ## Do a restart only if the service was active before.
-        ## Note: try-restart is now part of LSB (as of 1.9).
-        ## RH has a similar command named condrestart.
-        $0 status
-        if test $? = 0; then
-                $0 restart
-        else
-                rc_reset        # Not running is not a failure.
-        fi
-        # Remember status and be quiet
-        rc_status
-        ;;
-    restart)
-        $0 stop
-        $0 start
-        rc_status
-        ;;
-    reload|force-reload)
-        echo -n "Reload service MySQL Proxy"
-        kill -HUP `cat $MYSQL_PROXY_PID* 2>/dev/null` 2> /dev/null || true
-        rc_status -v
-        ;;
-    status)
-        echo -n "Checking for service MySQL Proxy: "
-        checkproc -p $MYSQL_PROXY_PID $MYSQL_PROXY_BIN
-        rc_status -v
-        ;;
-    probe)
-        test /etc/sysconfig/mysql-proxy -nt $MYSQL_PROXY_PID \
-        && echo reload
-        ;;
-    *)
-        echo "Usage: $0 {start|stop|status|try-restart|restart|force-reload|reload|probe}"
-        exit 1
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart|force-reload)
+	stop
+	start
+	;;
+  reload)
+  	reload
+	;;
+	;;
+  status)
+	status mysql-proxy
+	RETVAL=$?
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|reload|force-reload|status}"
+	exit 3
 esac
-rc_exit
 
+exit $RETVAL
