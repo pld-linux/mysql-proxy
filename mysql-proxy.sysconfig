@@ -1,19 +1,4 @@
-## Path:        Network/mysql-proxy
-## Description: MySQl Proxy configuration
+# MySQL Proxy configuration
 
-## Type:        string
-## Default:     "--daemon"
-## ServiceRestart: mysql-proxy
-#
-# Command line arguments to hand over to mysql-proxy
-# Normally: --daemon   (run as background daemon)
-#
-MYSQL_PROXY_ARGS="--daemon --proxy-lua-script /usr/share/doc/packages/mysql-proxy-snapshot/examples/tutorial-basic.lua"
-
-## Type:        string
-## Default:     "/var/run/mysql-proxy.pid"
-# 
-# Location of pid file
-#
-MYSQL_PROXY_PID="/var/run/mysql-proxy.pid"
-
+# filename of the lua script (default: not set)
+#LUA_SCRIPT="/usr/share/mysql-proxy/active-queries.lua"
