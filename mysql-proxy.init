@@ -32,7 +32,7 @@ start() {
 	if [ ! -f /var/lock/subsys/mysql-proxy ]; then
 		msg_starting "MySQL Proxy"
 		local args=${LUA_SCRIPT:+--proxy-lua-script="$LUA_SCRIPT"}
-		daemon /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy.pid $args
+		daemon --user mysql /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy/mysql-proxy.pid $args
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
 	else
@@ -44,7 +44,7 @@ stop() {
 	if [ -f /var/lock/subsys/mysql-proxy ]; then
 		# Stop daemons.
 		msg_stopping "MySQL Proxy"
-		killproc --pidfile /var/run/mysql-proxy.pid mysql-proxy
+		killproc --pidfile /var/run/mysql-proxy/mysql-proxy.pid mysql-proxy
 		rm -f /var/lock/subsys/mysql-proxy
 	else
 		msg_not_running "MySQL Proxy"
@@ -54,7 +54,7 @@ stop() {
 reload() {
 	if [ -f /var/lock/subsys/mysql-proxy ]; then
 		msg_reloading "MySQL Proxy"
-		killproc --pidfile /var/run/mysql-proxy.pid mysql-proxy -HUP
+		killproc --pidfile /var/run/mysql-proxy/mysql-proxy.pid mysql-proxy -HUP
 		RETVAL=$?
 	else
 		msg_not_running "MySQL Proxy"
