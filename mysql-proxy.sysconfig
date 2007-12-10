@@ -1,4 +1,9 @@
 # MySQL Proxy configuration
 
-# filename of the lua script (default: not set)
+# Filename of the LUA script.
+# default: not set
 #LUA_SCRIPT="/usr/share/mysql-proxy/active-queries.lua"
+
+# Backend addresses to use in form of IP:PORT.
+# default: 127.0.0.1:3306
+#PROXY_BACKEND_ADDRESSES="10.134.121.181:3306 10.134.121.156:3306"
