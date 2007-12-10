@@ -1,5 +1,3 @@
-# TODO
-# - mysqlproxy user to run as
 # Conditional build:
 %bcond_with	tests		# build with tests. needs mysql server on localhost:3306
 #
@@ -7,9 +5,9 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.6.0
-Release:	0.2
+Release:	1
 License:	GPL
-Group:		Applications
+Group:		Applications/Networking
 Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
 # Source0-md5:	b76ad6f059f78b9aaca49c8c29cb2719
 Source1:	%{name}.init
@@ -28,7 +26,15 @@ BuildRequires:	check
 BuildRequires:	lua51
 %endif
 Requires(post,preun):	/sbin/chkconfig
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
+Requires(pre):	/bin/id
+Requires(pre):	/usr/bin/getgid
+Requires(pre):	/usr/sbin/groupadd
+Requires(pre):	/usr/sbin/useradd
 Requires:	rc-scripts >= 0.4.0.20
+Provides:	group(mysqlproxy)
+Provides:	user(mysqlproxy)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -75,12 +81,16 @@ rm -rf $RPM_BUILD_ROOT
 
 # put those to -tutorial package
 rm -f $RPM_BUILD_ROOT%{_datadir}/*.lua
-install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
+install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},/var/run/mysql-proxy}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%pre
+%groupadd -g 193 mysqlproxy
+%useradd -u 193 -g mysqlproxy -c "MySQL Proxy" mysqlproxy
 
 %post
 /sbin/chkconfig --add %{name}
@@ -92,6 +102,12 @@ if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del %{name}
 fi
 
+%postun
+if [ "$1" = "0" ]; then
+	%userremove mysqlproxy
+	%groupremove mysqlproxy
+fi
+
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README README.TESTS THANKS
@@ -99,3 +115,4 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %attr(755,root,root) %{_sbindir}/mysql-proxy
 %{_datadir}/%{name}
+%dir %attr(775,root,mysqlproxy) /var/run/mysql-proxy
