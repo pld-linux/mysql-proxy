@@ -4,12 +4,13 @@
 Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
-Version:	0.6.0
-Release:	2
+Version:	0.6.1
+Release:	0.1
 License:	GPL
 Group:		Applications/Networking
-Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
-# Source0-md5:	b76ad6f059f78b9aaca49c8c29cb2719
+#Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
+Source0:	%{name}-%{version}.tar.bz2
+# Source0-md5:	f41753a28750f2661ea22fd5a4a24790
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Patch0:		%{name}-lua.patch
@@ -18,6 +19,7 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	glib2-devel >= 1:2.4.0
 BuildRequires:	libevent-devel
+BuildRequires:	libtool
 BuildRequires:	lua51-devel
 BuildRequires:	mysql-devel
 BuildRequires:	rpmbuild(macros) >= 1.268
@@ -57,6 +59,7 @@ zapytań... i wiele więcej.
 %patch0 -p1
 
 %build
+%{__libtoolize}
 %{__aclocal} -I m4
 %{__autoconf}
 %{__autoheader}
