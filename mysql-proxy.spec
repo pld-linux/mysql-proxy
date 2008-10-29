@@ -5,12 +5,11 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.6.1
-Release:	0.1
+Release:	1
 License:	GPL
 Group:		Applications/Networking
-#Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
-Source0:	%{name}-%{version}.tar.bz2
-# Source0-md5:	f41753a28750f2661ea22fd5a4a24790
+Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
+# Source0-md5:	f5b003f069c294002ae37c6df3a7a0a5
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Patch0:		%{name}-lua.patch
