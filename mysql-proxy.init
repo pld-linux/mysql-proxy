@@ -2,7 +2,7 @@
 #
 # mysql-proxy	MySQL Proxy
 #
-# chkconfig:	2345 85 24
+# chkconfig:	2345 85 15
 #
 # description:	MySQL Proxy
 #
@@ -65,6 +65,16 @@ reload() {
 	fi
 }
 
+condrestart() {
+	if [ -f /var/lock/subsys/mysql-proxy ]; then
+		stop
+		start
+	else
+		msg_not_running "MySQL Proxy"
+		RETVAL=$1
+	fi
+}
+
 RETVAL=0
 # See how we were called.
 case "$1" in
@@ -74,11 +84,14 @@ case "$1" in
   stop)
   	stop
 	;;
-  restart|force-reload)
+  restart)
 	stop
 	start
 	;;
-  reload)
+  try-restart)
+	condrestart 0
+	;;
+  reload|force-reload)
   	reload
 	;;
   status)
@@ -86,7 +99,7 @@ case "$1" in
 	RETVAL=$?
 	;;
   *)
-	msg_usage "$0 {start|stop|restart|reload|force-reload|status}"
+	msg_usage "$0 {start|stop|restart|try-restart|reload|force-reload|status}"
 	exit 3
 esac
 
