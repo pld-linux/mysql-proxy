@@ -1,19 +1,23 @@
+# TODO:
+# - fix autotools
+# - is URL correct?
+# - is it stable version?
 # Conditional build:
 %bcond_with	tests		# build with tests. needs mysql server on localhost:3306
 #
 Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
-Version:	0.6.1
-Release:	3
+Version:	0.7.1
+Release:	1
 License:	GPL
 Group:		Applications/Networking
-Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
-# Source0-md5:	f5b003f069c294002ae37c6df3a7a0a5
+Source0:	ftp://sunsite.informatik.rwth-aachen.de/pub/mirror/www.mysql.com/Downloads/MySQL-Proxy/mysql-proxy-0.7.1.tar.gz
+# Source0-md5:	009bc3e669fe42f5f8ac634d20226cf4
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Patch0:		%{name}-lua.patch
-URL:		http://forge.mysql.com/wiki/MySQL_Proxy
+URL:		https://launchpad.net/mysql-proxy
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	glib2-devel >= 1:2.4.0
@@ -58,11 +62,11 @@ zapytań... i wiele więcej.
 %patch0 -p1
 
 %build
-%{__libtoolize}
-%{__aclocal} -I m4
-%{__autoconf}
-%{__autoheader}
-%{__automake}
+#%%{__libtoolize}
+#%%{__aclocal} -I m4
+#%%{__autoconf}
+#%%{__autoheader}
+#%%{__automake}
 %configure \
 	--with-lua=lua51
 %{__make}
