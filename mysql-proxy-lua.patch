@@ -1,9 +1,9 @@
---- mysql-proxy-0.7.1/tests/suite/Makefile.am~	2009-05-18 16:14:45.000000000 +0200
-+++ mysql-proxy-0.7.1/tests/suite/Makefile.am	2009-06-19 00:02:28.000000000 +0200
-@@ -7,7 +7,7 @@
- 	top_builddir=${top_builddir} \
- 	builddir=${builddir} \
- 	srcdir=${srcdir}/ \
+--- mysql-proxy-0.6.0/tests/suite/Makefile.am~	2007-09-07 00:23:13.000000000 +0300
++++ mysql-proxy-0.6.0/tests/suite/Makefile.am	2007-11-21 12:11:04.645008294 +0200
+@@ -5,7 +5,7 @@
+ 	LUA_USER_PATH="${top_srcdir}/lib/?.lua" \
+ 	LUA_CPATH=".libs/?.so" \
+ 	builddir=${top_builddir} \
 -	lua ${srcdir}/run-tests.lua
 +	lua51 ${srcdir}/run-tests.lua
  
