@@ -32,8 +32,17 @@ start() {
 	if [ ! -f /var/lock/subsys/mysql-proxy ]; then
 		msg_starting "MySQL Proxy"
 		local args=${LUA_SCRIPT:+--proxy-lua-script="$LUA_SCRIPT"}
+		for addr in $PROXY_READ_ONLY_BACKEND_ADDRESSES; do
+			args="$args --proxy-read-only-backend-addresses=$addr"
+		done
 		for addr in $PROXY_BACKEND_ADDRESSES; do
 			args="$args --proxy-backend-addresses=$addr"
+		done
+		for addr in $PROXY_ADDRESS; do
+			args="$args --proxy-addresses=$addr"
+		done
+		for addr in $ADMIN_ADDRESS; do
+			args="$args --admin-addresses=$addr"
 		done
 		daemon --user mysqlproxy /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy/mysql-proxy.pid $args
 		RETVAL=$?
