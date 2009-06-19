@@ -2,6 +2,9 @@
 # - fix autotools
 # - is URL correct?
 # - is it stable version?
+# - plugins/*la to plugins-devel subpackage?
+# - better descriptions
+
 # Conditional build:
 %bcond_with	tests		# build with tests. needs mysql server on localhost:3306
 #
@@ -80,6 +83,17 @@ Header files for MySQL Proxy libraries.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe bibliotek MySQL Proxy.
 
+%package plugins
+Summary:	MySQL Proxy plugins
+Summary(pl.UTF-8):	Wtyczki MySQL Proxy
+Group:		Libraries
+
+%description plugins
+MySQL Proxy plugins.
+
+%description plugins -l pl.UTF-8
+Wtyczki MySQL Proxy.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -143,7 +157,10 @@ fi
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %attr(755,root,root) %{_sbindir}/mysql-proxy
-# %{_datadir}/%{name}
+%attr(755,root,root) %{_bindir}/mysql-binlog-dump
+%attr(755,root,root) %{_bindir}/mysql-myisam-dump
+%dir %{_libdir}/mysql-proxy
+%{_libdir}/mysql-proxy/lua
 %dir %attr(775,root,mysqlproxy) /var/run/mysql-proxy
 
 %files libs
@@ -159,3 +176,8 @@ fi
 %{_libdir}/libmysql-chassis.so
 %{_libdir}/libmysql-proxy.la
 %{_libdir}/libmysql-chassis.la
+
+%files plugins
+%dir %{_libdir}/mysql-proxy/plugins
+%attr(755,root,root) %{_libdir}/mysql-proxy/plugins/*.so
+%{_libdir}/mysql-proxy/plugins/*.la
