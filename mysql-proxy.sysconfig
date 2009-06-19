@@ -7,3 +7,12 @@
 # Backend addresses to use in form of IP:PORT.
 # default: 127.0.0.1:3306
 #PROXY_BACKEND_ADDRESSES="10.134.121.181:3306 10.134.121.156:3306"
+
+# Slave-server address
+#PROXY_READ_ONLY_BACKEND_ADDRESSES="10.134.121.181:3306 10.134.121.156:3306"
+
+# Listening address (default: :4040)
+#PROXY_ADDRESS="0.0.0.0:4040"
+
+# Listening address for internal admin-server (default: :4041)
+#ADMIN_ADDRESS="10.1.1.1:4041"
