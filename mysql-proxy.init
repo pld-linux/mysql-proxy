@@ -38,12 +38,12 @@ start() {
 		for addr in $PROXY_BACKEND_ADDRESSES; do
 			args="$args --proxy-backend-addresses=$addr"
 		done
-		for addr in $PROXY_ADDRESS; do
-			args="$args --proxy-addresses=$addr"
-		done
-		for addr in $ADMIN_ADDRESS; do
-			args="$args --admin-addresses=$addr"
-		done
+		if [ "$PROXY_ADDRESS" ]; then
+			args="$args --proxy-address=$PROXY_ADDRESS"
+		fi
+		if [ "$ADMIN_ADDRESS" ]; then
+			args="$args --admin-address=$ADMIN_ADDRESS"
+		fi
 		daemon --user mysqlproxy /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy/mysql-proxy.pid $args
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
