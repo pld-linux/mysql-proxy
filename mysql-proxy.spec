@@ -12,7 +12,7 @@ Version:	0.7.1
 Release:	0.1
 License:	GPL
 Group:		Applications/Networking
-Source0:	ftp://sunsite.informatik.rwth-aachen.de/pub/mirror/www.mysql.com/Downloads/MySQL-Proxy/mysql-proxy-0.7.1.tar.gz
+Source0:	ftp://sunsite.informatik.rwth-aachen.de/pub/mirror/www.mysql.com/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
 # Source0-md5:	009bc3e669fe42f5f8ac634d20226cf4
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
@@ -56,6 +56,29 @@ przekształcać ich komunikację. Jego elastyczność pozwala na
 nieograniczone wykorzystanie; popularne sposoby użycia obejmują: load
 balancing, failover, analizę zapytań, filtrowanie i modyfikowanie
 zapytań... i wiele więcej.
+
+%package libs
+Summary:	MySQL Proxy libraries
+Summary(pl.UTF-8):	Biblioteki MySQL Proxy
+Group:		Libraries
+
+%description libs
+MySQL Proxy libraries.
+
+%description libs -l pl.UTF-8
+Biblioteki MySQL Proxy.
+
+%package devel
+Summary:	Header files for MySQL Proxy libraries
+Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek MySQL Proxy
+Group:		Development/Libraries
+Requires:	%{name}-libs = %{version}-%{release}
+
+%description devel
+Header files for MySQL Proxy libraries.
+
+%description devel -l pl.UTF-8
+Pliki nagłówkowe bibliotek MySQL Proxy.
 
 %prep
 %setup -q
@@ -120,5 +143,19 @@ fi
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %attr(755,root,root) %{_sbindir}/mysql-proxy
-%{_datadir}/%{name}
+# %{_datadir}/%{name}
 %dir %attr(775,root,mysqlproxy) /var/run/mysql-proxy
+
+%files libs
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libmysql-proxy.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libmysql-proxy.so.0
+%attr(755,root,root) %{_libdir}/libmysql-chassis.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libmysql-chassis.so.0
+
+%files devel
+%defattr(644,root,root,755)
+%{_libdir}/libmysql-proxy.so
+%{_libdir}/libmysql-chassis.so
+%{_libdir}/libmysql-proxy.la
+%{_libdir}/libmysql-chassis.la
