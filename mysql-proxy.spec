@@ -2,7 +2,6 @@
 # - fix autotools
 # - is URL correct?
 # - is it stable version?
-# - plugins/*la to plugins-devel subpackage?
 # - better descriptions
 
 # Conditional build:
@@ -124,6 +123,7 @@ rm -rf $RPM_BUILD_ROOT
 
 # put those to -tutorial package
 rm -f $RPM_BUILD_ROOT%{_datadir}/*.lua
+rm -f $RPM_BUILD_ROOT%{_libdir}/mysql-proxy/plugins/*.la
 install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},/var/run/mysql-proxy}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
@@ -180,4 +180,3 @@ fi
 %files plugins
 %dir %{_libdir}/mysql-proxy/plugins
 %attr(755,root,root) %{_libdir}/mysql-proxy/plugins/*.so
-%{_libdir}/mysql-proxy/plugins/*.la
