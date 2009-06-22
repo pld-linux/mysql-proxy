@@ -18,6 +18,8 @@ Source0:	ftp://sunsite.informatik.rwth-aachen.de/pub/mirror/www.mysql.com/Downlo
 # Source0-md5:	009bc3e669fe42f5f8ac634d20226cf4
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
+# From http://forge.mysql.com/tools/tool.php?id=81
+Source3:	%{name}-logging.lua
 Patch0:		%{name}-lua.patch
 URL:		https://launchpad.net/mysql-proxy
 BuildRequires:	autoconf
@@ -93,6 +95,18 @@ MySQL Proxy plugins.
 %description plugins -l pl.UTF-8
 Wtyczki MySQL Proxy.
 
+%package script-logging
+Summary:	Script for logging MySQL queries
+Summary(pl.UTF-8):	Skrypt logujący zapytania MySQL
+Group:		Libraries
+Requires:	%{name} = %{epoch}:%{version}-%{release}
+
+%description script-logging
+Script for logging MySQL queries.
+
+%description script-logging -l pl.UTF-8
+Skrypt logujący zapytania MySQL.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -127,6 +141,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/mysql-proxy/plugins/*.la
 install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},/var/run/mysql-proxy}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
+install %{SOURCE3} $RPM_BUILD_ROOT%{_libdir}/%{name}/lua/logging.lua
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -161,6 +176,7 @@ fi
 %attr(755,root,root) %{_bindir}/mysql-myisam-dump
 %dir %{_libdir}/mysql-proxy
 %{_libdir}/mysql-proxy/lua
+%exclude %{_libdir}/mysql-proxy/lua/logging.lua
 %dir %attr(775,root,mysqlproxy) /var/run/mysql-proxy
 
 %files libs
@@ -178,5 +194,10 @@ fi
 %{_libdir}/libmysql-chassis.la
 
 %files plugins
+%defattr(644,root,root,755)
 %dir %{_libdir}/mysql-proxy/plugins
 %attr(755,root,root) %{_libdir}/mysql-proxy/plugins/*.so
+
+%files script-logging
+%defattr(644,root,root,755)
+%{_libdir}/mysql-proxy/lua/logging.lua
