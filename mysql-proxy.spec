@@ -1,5 +1,7 @@
 # TODO
 # - system lua-lfs for tests (LuaFileSystem 1.2)
+# - daemon does not close its std fds
+# - tests need fixing (can't find libs it built)
 #
 # Conditional build:
 %bcond_with	tests		# build with tests. needs mysql server on localhost:3306
@@ -36,7 +38,7 @@ Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-Requires:	rc-scripts >= 0.4.0.20
+Requires:	rc-scripts >= 0.4.1.24
 Provides:	group(mysqlproxy)
 Provides:	user(mysqlproxy)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)

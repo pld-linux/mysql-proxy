@@ -49,7 +49,7 @@ start() {
 		args="$args --admin-address=$ADMIN_ADDRESS"
 	fi
 
-	daemon --user mysqlproxy /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy/mysql-proxy.pid $args
+	daemon --closefds --user mysqlproxy /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy/mysql-proxy.pid $args
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
 }
