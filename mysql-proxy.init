@@ -29,69 +29,74 @@ fi
 
 start() {
 	# Check if the service is already running?
-	if [ ! -f /var/lock/subsys/mysql-proxy ]; then
-		msg_starting "MySQL Proxy"
-		local args=${LUA_SCRIPT:+--proxy-lua-script="$LUA_SCRIPT"}
-		for addr in $PROXY_READ_ONLY_BACKEND_ADDRESSES; do
-			args="$args --proxy-read-only-backend-addresses=$addr"
-		done
-		for addr in $PROXY_BACKEND_ADDRESSES; do
-			args="$args --proxy-backend-addresses=$addr"
-		done
-		if [ "$PROXY_ADDRESS" ]; then
-			args="$args --proxy-address=$PROXY_ADDRESS"
-		fi
-		if [ "$ADMIN_ADDRESS" ]; then
-			args="$args --admin-address=$ADMIN_ADDRESS"
-		fi
-		daemon --user mysqlproxy /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy/mysql-proxy.pid $args
-		RETVAL=$?
-		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
-	else
+	if [ -f /var/lock/subsys/mysql-proxy ]; then
 		msg_already_running "MySQL Proxy"
+		return
 	fi
+
+	msg_starting "MySQL Proxy"
+	local args=${LUA_SCRIPT:+--proxy-lua-script="$LUA_SCRIPT"}
+	for addr in $PROXY_READ_ONLY_BACKEND_ADDRESSES; do
+		args="$args --proxy-read-only-backend-addresses=$addr"
+	done
+	for addr in $PROXY_BACKEND_ADDRESSES; do
+		args="$args --proxy-backend-addresses=$addr"
+	done
+	if [ "$PROXY_ADDRESS" ]; then
+		args="$args --proxy-address=$PROXY_ADDRESS"
+	fi
+	if [ "$ADMIN_ADDRESS" ]; then
+		args="$args --admin-address=$ADMIN_ADDRESS"
+	fi
+
+	daemon --user mysqlproxy /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy/mysql-proxy.pid $args
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
 }
 
 stop() {
-	if [ -f /var/lock/subsys/mysql-proxy ]; then
-		# Stop daemons.
-		msg_stopping "MySQL Proxy"
-		killproc --pidfile /var/run/mysql-proxy/mysql-proxy.pid mysql-proxy
-		rm -f /var/lock/subsys/mysql-proxy
-	else
+	if [ ! -f /var/lock/subsys/mysql-proxy ]; then
 		msg_not_running "MySQL Proxy"
+		return
 	fi
+
+	# Stop daemons.
+	msg_stopping "MySQL Proxy"
+	killproc --pidfile /var/run/mysql-proxy/mysql-proxy.pid mysql-proxy
+	rm -f /var/lock/subsys/mysql-proxy
 }
 
 reload() {
-	if [ -f /var/lock/subsys/mysql-proxy ]; then
-		msg_reloading "MySQL Proxy"
-		killproc --pidfile /var/run/mysql-proxy/mysql-proxy.pid mysql-proxy -HUP
-		RETVAL=$?
-	else
+	if [ ! -f /var/lock/subsys/mysql-proxy ]; then
 		msg_not_running "MySQL Proxy"
 		RETVAL=7
+		return
 	fi
+
+	msg_reloading "MySQL Proxy"
+	killproc --pidfile /var/run/mysql-proxy/mysql-proxy.pid mysql-proxy -HUP
+	RETVAL=$?
 }
 
 condrestart() {
-	if [ -f /var/lock/subsys/mysql-proxy ]; then
-		stop
-		start
-	else
+	if [ ! -f /var/lock/subsys/mysql-proxy ]; then
 		msg_not_running "MySQL Proxy"
 		RETVAL=$1
+		return
 	fi
+
+	stop
+	start
 }
 
 RETVAL=0
 # See how we were called.
 case "$1" in
   start)
-  	start
+	start
 	;;
   stop)
-  	stop
+	stop
 	;;
   restart)
 	stop
@@ -101,7 +106,7 @@ case "$1" in
 	condrestart 0
 	;;
   reload|force-reload)
-  	reload
+	reload
 	;;
   status)
 	status mysql-proxy
