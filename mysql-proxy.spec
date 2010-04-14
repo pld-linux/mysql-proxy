@@ -1,18 +1,21 @@
+# TODO
+# - system lua-lfs for tests (LuaFileSystem 1.2)
+#
 # Conditional build:
 %bcond_with	tests		# build with tests. needs mysql server on localhost:3306
-#
+
 Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
-Version:	0.6.1
-Release:	3
+Version:	0.8.0
+Release:	0.1
 License:	GPL
 Group:		Applications/Networking
-Source0:	http://mysql.tonnikala.org/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
-# Source0-md5:	f5b003f069c294002ae37c6df3a7a0a5
+Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
+# Source0-md5:	b6a9748d72e8db7fe3789fbdd60ff451
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
-Patch0:		%{name}-lua.patch
+#Patch0: %{name}-lua.patch
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -38,6 +41,8 @@ Provides:	group(mysqlproxy)
 Provides:	user(mysqlproxy)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+%define		_includedir	%{_prefix}/include/%{name}
+
 %description
 MySQL Proxy is a simple program that sits between your client and
 MySQL server(s) that can monitor, analyze or transform their
@@ -55,7 +60,7 @@ zapytań... i wiele więcej.
 
 %prep
 %setup -q
-%patch0 -p1
+#%patch0 -p1
 
 %build
 %{__libtoolize}
@@ -71,7 +76,6 @@ zapytań... i wiele więcej.
 export MYSQL_USER=mysql
 export MYSQL_PASSWORD=
 export MYSQL_HOST=localhost
-export MYSQL_PORT=3306
 export MYSQL_DB=test
 %{__make} -C tests/suite check
 %endif
@@ -81,11 +85,19 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},/var/run/mysql-proxy}
+install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
+
+# daemon in sbindir
+install -d $RPM_BUILD_ROOT%{_sbindir}
+mv $RPM_BUILD_ROOT{%{_bindir},%{_sbindir}}/mysql-proxy
+
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/*.la
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lua/*.la
+
 # put those to -tutorial package
 rm -f $RPM_BUILD_ROOT%{_datadir}/*.lua
-install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},/var/run/mysql-proxy}
-install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
-install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -95,6 +107,7 @@ rm -rf $RPM_BUILD_ROOT
 %useradd -u 193 -g mysqlproxy -c "MySQL Proxy" mysqlproxy
 
 %post
+/sbin/ldconfig
 /sbin/chkconfig --add %{name}
 %service %{name} restart "MySQL Proxy"
 
@@ -105,6 +118,7 @@ if [ "$1" = "0" ]; then
 fi
 
 %postun
+/sbin/ldconfig
 if [ "$1" = "0" ]; then
 	%userremove mysqlproxy
 	%groupremove mysqlproxy
@@ -112,9 +126,53 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog NEWS README README.TESTS THANKS
+%doc AUTHORS NEWS README* ChangeLog
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %attr(755,root,root) %{_sbindir}/mysql-proxy
-%{_datadir}/%{name}
+# ??? tools?
+%attr(755,root,root) %{_bindir}/mysql-binlog-dump
+%attr(755,root,root) %{_bindir}/mysql-myisam-dump
+
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/lua
+%attr(755,root,root) %{_libdir}/%{name}/lua/chassis.so
+%attr(755,root,root) %{_libdir}/%{name}/lua/glib2.so
+%attr(755,root,root) %{_libdir}/%{name}/lua/lfs.so
+%attr(755,root,root) %{_libdir}/%{name}/lua/lpeg.so
+%attr(755,root,root) %{_libdir}/%{name}/lua/mysql.so
+%attr(755,root,root) %{_libdir}/%{name}/lua/posix.so
+%dir %{_libdir}/%{name}/lua/proxy
+%{_libdir}/%{name}/lua/proxy/auto-config.lua
+%{_libdir}/%{name}/lua/proxy/balance.lua
+%{_libdir}/%{name}/lua/proxy/commands.lua
+%{_libdir}/%{name}/lua/proxy/parser.lua
+%{_libdir}/%{name}/lua/proxy/test.lua
+%{_libdir}/%{name}/lua/proxy/tokenizer.lua
+
+%dir %{_libdir}/%{name}/plugins
+%attr(755,root,root) %{_libdir}/%{name}/plugins/libadmin.so
+%attr(755,root,root) %{_libdir}/%{name}/plugins/libdebug.so
+%attr(755,root,root) %{_libdir}/%{name}/plugins/libproxy.so
+%attr(755,root,root) %{_libdir}/%{name}/plugins/libreplicant.so
+
 %dir %attr(775,root,mysqlproxy) /var/run/mysql-proxy
+
+# -libs
+%attr(755,root,root) %ghost %{_libdir}/libmysql-chassis-timing.so.0
+%attr(755,root,root) %{_libdir}/libmysql-chassis-timing.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libmysql-chassis.so.0
+%attr(755,root,root) %{_libdir}/libmysql-chassis.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libmysql-proxy.so.0
+%attr(755,root,root) %{_libdir}/libmysql-proxy.so.*.*.*
+
+# -devel
+%{_includedir}
+%{_libdir}/libmysql-chassis-timing.la
+%{_libdir}/libmysql-chassis-timing.so
+%{_libdir}/libmysql-chassis.la
+%{_libdir}/libmysql-chassis.so
+%{_libdir}/libmysql-proxy.la
+%{_libdir}/libmysql-proxy.so
+%{_pkgconfigdir}/mysql-chassis.pc
+%{_pkgconfigdir}/mysql-proxy.pc
