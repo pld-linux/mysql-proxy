@@ -2,6 +2,12 @@
 # - system lua-lfs for tests (LuaFileSystem 1.2)
 # - daemon does not close its std fds
 # - tests need fixing (can't find libs it built)
+# OLD TODO
+# - rw splitting bug: http://bugs.mysql.com/bug.php?id=36505
+#   http://jan.kneschke.de/2007/8/26/mysql-proxy-more-r-w-splitting
+#   http://www.teonator.net/2008/11/25/drupal-read-write-splitting/
+#   http://dailyvim.blogspot.com/2008/07/mysql-high-availability-sandbox-proxy.html
+#   https://launchpad.net/mysql-sandbox
 #
 # Conditional build:
 %bcond_with	tests		# build with tests. needs mysql server on localhost:3306
@@ -17,7 +23,6 @@ Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{ver
 # Source0-md5:	b6a9748d72e8db7fe3789fbdd60ff451
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
-#Patch0: %{name}-lua.patch
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -62,7 +67,6 @@ zapytań... i wiele więcej.
 
 %prep
 %setup -q
-#%patch0 -p1
 
 %build
 %{__libtoolize}
