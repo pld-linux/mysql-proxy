@@ -31,6 +31,7 @@ BuildRequires:	libevent-devel
 BuildRequires:	libtool
 BuildRequires:	lua51-devel
 BuildRequires:	mysql-devel
+BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.268
 %if %{with tests}
 BuildRequires:	check
