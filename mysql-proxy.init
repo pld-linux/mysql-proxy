@@ -14,6 +14,10 @@
 # Get network config
 . /etc/sysconfig/network
 
+PROXY_USER="mysqlproxy"
+PROXY_LOG_OPTIONS="--log-level=info --log-use-syslog"
+PROXY_PID="/var/run/mysql-proxy.pid"
+
 # Get service config - may override defaults
 [ -f /etc/sysconfig/mysql-proxy ] && . /etc/sysconfig/mysql-proxy
 
@@ -35,7 +39,10 @@ start() {
 	fi
 
 	msg_starting "MySQL Proxy"
-	local args=${LUA_SCRIPT:+--proxy-lua-script="$LUA_SCRIPT"}
+	local args="--daemon --user $PROXY_USER --pid-file $PROXY_PID $PROXY_LOG_OPTIONS"
+	if [ "$LUA_SCRIPT" ]; then
+		args="$args --proxy-lua-script=$LUA_SCRIPT"
+	fi
 	for addr in $PROXY_READ_ONLY_BACKEND_ADDRESSES; do
 		args="$args --proxy-read-only-backend-addresses=$addr"
 	done
@@ -49,7 +56,7 @@ start() {
 		args="$args --admin-address=$ADMIN_ADDRESS"
 	fi
 
-	daemon --closefds --user mysqlproxy /usr/sbin/mysql-proxy --daemon --pid-file=/var/run/mysql-proxy/mysql-proxy.pid $args
+	daemon /usr/sbin/mysql-proxy $args
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
 }
@@ -62,7 +69,7 @@ stop() {
 
 	# Stop daemons.
 	msg_stopping "MySQL Proxy"
-	killproc --pidfile /var/run/mysql-proxy/mysql-proxy.pid mysql-proxy
+	killproc --pidfile $PROXY_PID mysql-proxy
 	rm -f /var/lock/subsys/mysql-proxy
 }
 
@@ -74,7 +81,7 @@ reload() {
 	fi
 
 	msg_reloading "MySQL Proxy"
-	killproc --pidfile /var/run/mysql-proxy/mysql-proxy.pid mysql-proxy -HUP
+	killproc --pidfile $PROXY_PID mysql-proxy -HUP
 	RETVAL=$?
 }
 
