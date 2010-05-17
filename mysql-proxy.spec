@@ -16,7 +16,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.0
-Release:	0.9
+Release:	0.11
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
@@ -106,8 +106,18 @@ cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.conf
 install -d $RPM_BUILD_ROOT%{_sbindir}
 mv $RPM_BUILD_ROOT{%{_bindir},%{_sbindir}}/mysql-proxy
 
+# noarch data to /usr/share
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/lua
+mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/proxy
+
 rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lua/*.la
+
+# no -devel, kill
+rm -rf $RPM_BUILD_ROOT%{_includedir}
+rm -rf $RPM_BUILD_ROOT%{_libdir}/libmysql-*.la
+rm -rf $RPM_BUILD_ROOT%{_libdir}/libmysql-*.so
+rm -rf $RPM_BUILD_ROOT%{_pkgconfigdir}
 
 # put those to -tutorial package
 rm -f $RPM_BUILD_ROOT%{_datadir}/*.lua
@@ -161,13 +171,14 @@ fi
 %attr(755,root,root) %{_libdir}/%{name}/lua/lpeg.so
 %attr(755,root,root) %{_libdir}/%{name}/lua/mysql.so
 %attr(755,root,root) %{_libdir}/%{name}/lua/posix.so
-%dir %{_libdir}/%{name}/lua/proxy
-%{_libdir}/%{name}/lua/proxy/auto-config.lua
-%{_libdir}/%{name}/lua/proxy/balance.lua
-%{_libdir}/%{name}/lua/proxy/commands.lua
-%{_libdir}/%{name}/lua/proxy/parser.lua
-%{_libdir}/%{name}/lua/proxy/test.lua
-%{_libdir}/%{name}/lua/proxy/tokenizer.lua
+
+%dir %{_datadir}/%{name}/lua/proxy
+%{_datadir}/%{name}/lua/proxy/auto-config.lua
+%{_datadir}/%{name}/lua/proxy/balance.lua
+%{_datadir}/%{name}/lua/proxy/commands.lua
+%{_datadir}/%{name}/lua/proxy/parser.lua
+%{_datadir}/%{name}/lua/proxy/test.lua
+%{_datadir}/%{name}/lua/proxy/tokenizer.lua
 
 %dir %{_libdir}/%{name}/plugins
 %attr(755,root,root) %{_libdir}/%{name}/plugins/libadmin.so
@@ -182,14 +193,3 @@ fi
 %attr(755,root,root) %{_libdir}/libmysql-chassis.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libmysql-proxy.so.0
 %attr(755,root,root) %{_libdir}/libmysql-proxy.so.*.*.*
-
-# -devel
-%{_includedir}
-%{_libdir}/libmysql-chassis-timing.la
-%{_libdir}/libmysql-chassis-timing.so
-%{_libdir}/libmysql-chassis.la
-%{_libdir}/libmysql-chassis.so
-%{_libdir}/libmysql-proxy.la
-%{_libdir}/libmysql-proxy.so
-%{_pkgconfigdir}/mysql-chassis.pc
-%{_pkgconfigdir}/mysql-proxy.pc
