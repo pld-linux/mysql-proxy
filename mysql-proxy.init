@@ -16,7 +16,9 @@
 
 PROXY_USER="mysqlproxy"
 PROXY_PID="/var/run/mysql-proxy.pid"
+PROXY_ANGEL_PID="/var/run/mysql-proxy-angel.pid"
 PROXY_DEFAULTS_FILE="/etc/mysql-proxy/mysql-proxy.conf"
+PROXY_ANGEL="no"
 
 # Get service config - may override defaults
 [ -f /etc/sysconfig/mysql-proxy ] && . /etc/sysconfig/mysql-proxy
@@ -39,7 +41,14 @@ start() {
 	fi
 
 	msg_starting "MySQL Proxy"
-	daemon --redirfds /usr/sbin/mysql-proxy --daemon --user $PROXY_USER --pid-file $PROXY_PID --defaults-file $PROXY_DEFAULTS_FILE $PROXY_OPTIONS
+	if is_yes "$PROXY_ANGEL"; then
+		# --makepid works only with ssd
+		RC_LOGGING="no"
+		daemon --fork --pidfile $PROXY_ANGEL_PID --makepid \
+			/usr/sbin/mysql-proxy --user $PROXY_USER --pid-file $PROXY_PID --defaults-file $PROXY_DEFAULTS_FILE --keepalive $PROXY_OPTIONS
+	else
+		daemon --redirfds /usr/sbin/mysql-proxy --daemon --user $PROXY_USER --pid-file $PROXY_PID --defaults-file $PROXY_DEFAULTS_FILE $PROXY_OPTIONS
+	fi
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
 }
@@ -52,6 +61,9 @@ stop() {
 
 	# Stop daemons.
 	msg_stopping "MySQL Proxy"
+
+	# use ssd mode, rc-script sends KILL way too early
+	RC_LOGGING="no"
 	killproc --pidfile $PROXY_PID mysql-proxy
 	rm -f /var/lock/subsys/mysql-proxy
 }
@@ -64,6 +76,8 @@ reload() {
 	fi
 
 	msg_reloading "MySQL Proxy"
+	# send HUP to main (not angel) process, angel seems hitting HUP only once
+	# and then start ignoring it. sigh.
 	killproc --pidfile $PROXY_PID mysql-proxy -HUP
 	RETVAL=$?
 }
@@ -115,7 +129,12 @@ case "$1" in
 	flush-logs
 	;;
   status)
-	status mysql-proxy
+	if is_yes "$PROXY_ANGEL"; then
+		nls "Angel process status:"
+		status --pidfile $PROXY_ANGEL_PID mysql-proxy
+	fi
+	nls "Proxy process status:"
+	status --pidfile $PROXY_PID mysql-proxy
 	RETVAL=$?
 	;;
   *)

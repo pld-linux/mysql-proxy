@@ -1,12 +1,16 @@
 # TODO
 # - system lua-lfs for tests (LuaFileSystem 1.2)
 # - daemon does not close its std fds
-# - with keepalive=yes pidfile contains wrong pid after restarts (it contains
-#   child pid and rc-scripts killing child will make parent guardian process
-#   respawn). in fact you can't even stop normally proxy with keepalive=yes
-#   using initscript.
-#   2010-05-17 20:36:05: (message) chassis.c:223: [angel] PID=22627 died on signal=9 (it used 2 kBytes max) ... waiting 3min before restart
-#   2010-05-17 20:36:05: (message) chassis.c:178: [angel] we try to keep PID=22779 alive
+# - with keepalive=yes (angel mode) killing child with TERM sometimes does
+#   nothing and your restart has to send SIGKILL eventually, seems it's just
+#   losing the signal (some race?).
+#   clock_gettime(CLOCK_MONOTONIC, {8381139, 777478778}) = 0
+#   epoll_wait(6, {}, 8191, 962)            = 0
+#   clock_gettime(CLOCK_MONOTONIC, {8381140, 739212126}) = 0
+#   epoll_wait(6, {}, 8191, 1000)           = 0
+#   clock_gettime(CLOCK_MONOTONIC, {8381141, 742484533}) = 0
+#   - child TERM seems broken in non-angel mode as well (just loses it).
+#   - child HUP seems broken in non-angel mode as well (sees it only once).
 # - tests need fixing (can't find libs it built)
 # OLD TODO
 # - rw splitting bug: http://bugs.mysql.com/bug.php?id=36505
@@ -22,7 +26,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.0
-Release:	0.14
+Release:	0.15
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
