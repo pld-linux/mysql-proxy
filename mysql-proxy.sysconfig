@@ -14,5 +14,11 @@
 # Listening address (default: :4040)
 #PROXY_ADDRESS="0.0.0.0:4040"
 
+# System user to switch
+#PROXY_USER="mysql-proxy"
+
+# Log options
+#PROXY_LOG_OPTIONS="--log-level=info --log-use-syslog"
+
 # Listening address for internal admin-server (default: :4041)
 #ADMIN_ADDRESS="10.1.1.1:4041"
