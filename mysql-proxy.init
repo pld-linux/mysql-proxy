@@ -17,6 +17,7 @@
 PROXY_USER="mysqlproxy"
 PROXY_LOG_OPTIONS="--log-level=info --log-use-syslog"
 PROXY_PID="/var/run/mysql-proxy.pid"
+PROXY_DEFAULTS_FILE=/etc/mysql-proxy/mysql-proxy.conf
 
 # Get service config - may override defaults
 [ -f /etc/sysconfig/mysql-proxy ] && . /etc/sysconfig/mysql-proxy
@@ -40,6 +41,8 @@ start() {
 
 	msg_starting "MySQL Proxy"
 	local args="--daemon --user $PROXY_USER --pid-file $PROXY_PID $PROXY_LOG_OPTIONS"
+	args="$args --defaults-file $PROXY_DEFAULTS_FILE"
+
 	if [ "$LUA_SCRIPT" ]; then
 		args="$args --proxy-lua-script=$LUA_SCRIPT"
 	fi

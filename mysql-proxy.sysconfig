@@ -14,6 +14,9 @@
 # Listening address (default: :4040)
 #PROXY_ADDRESS="0.0.0.0:4040"
 
+# Config for defaults, i.e --defaults-file parameter
+#PROXY_DEFAULTS_FILE=/etc/mysql-proxy/mysql-proxy.conf
+
 # System user to switch
 #PROXY_USER="mysqlproxy"
 

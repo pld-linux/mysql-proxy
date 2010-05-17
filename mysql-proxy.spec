@@ -16,13 +16,14 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.0
-Release:	0.4
+Release:	0.7
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
 # Source0-md5:	b6a9748d72e8db7fe3789fbdd60ff451
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
+Source3:	%{name}.conf
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -96,9 +97,10 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
+install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},%{_sysconfdir}/%{name}}
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
+cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.conf
 
 # daemon in sbindir
 install -d $RPM_BUILD_ROOT%{_sbindir}
@@ -140,6 +142,8 @@ fi
 %doc AUTHORS NEWS README* ChangeLog
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
+%dir %attr(750,root,root) %{_sysconfdir}/%{name}
+%config(noreplace) %attr(640,root,root) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/%{name}.conf
 %attr(755,root,root) %{_sbindir}/mysql-proxy
 # ??? tools?
 %attr(755,root,root) %{_bindir}/mysql-binlog-dump
