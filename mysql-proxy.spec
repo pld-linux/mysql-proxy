@@ -16,7 +16,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.0
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
@@ -33,6 +33,7 @@ BuildRequires:	lua51-devel
 BuildRequires:	mysql-devel
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	sed >= 4.0
 %if %{with tests}
 BuildRequires:	check
 BuildRequires:	lua51
@@ -68,6 +69,9 @@ zapytań... i wiele więcej.
 
 %prep
 %setup -q
+
+sed -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis.c
+sed -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis.c
 
 %build
 %{__libtoolize}
