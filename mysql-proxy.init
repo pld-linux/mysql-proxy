@@ -39,7 +39,7 @@ start() {
 	fi
 
 	msg_starting "MySQL Proxy"
-	daemon /usr/sbin/mysql-proxy --daemon --user $PROXY_USER --pid-file $PROXY_PID --defaults-file $PROXY_DEFAULTS_FILE $PROXY_OPTIONS
+	daemon --redirfds /usr/sbin/mysql-proxy --daemon --user $PROXY_USER --pid-file $PROXY_PID --defaults-file $PROXY_DEFAULTS_FILE $PROXY_OPTIONS
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/mysql-proxy
 }
