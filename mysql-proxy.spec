@@ -1,6 +1,12 @@
 # TODO
 # - system lua-lfs for tests (LuaFileSystem 1.2)
 # - daemon does not close its std fds
+# - with keepalive=yes pidfile contains wrong pid after restarts (it contains
+#   child pid and rc-scripts killing child will make parent guardian process
+#   respawn). in fact you can't even stop normally proxy with keepalive=yes
+#   using initscript.
+#   2010-05-17 20:36:05: (message) chassis.c:223: [angel] PID=22627 died on signal=9 (it used 2 kBytes max) ... waiting 3min before restart
+#   2010-05-17 20:36:05: (message) chassis.c:178: [angel] we try to keep PID=22779 alive
 # - tests need fixing (can't find libs it built)
 # OLD TODO
 # - rw splitting bug: http://bugs.mysql.com/bug.php?id=36505
@@ -16,7 +22,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.0
-Release:	0.11
+Release:	0.14
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
@@ -46,7 +52,7 @@ Requires(pre):	/bin/id
 Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-Requires:	rc-scripts >= 0.4.1.24
+Requires:	rc-scripts >= 0.4.2.8
 Provides:	group(mysqlproxy)
 Provides:	user(mysqlproxy)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -106,7 +112,7 @@ cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.conf
 install -d $RPM_BUILD_ROOT%{_sbindir}
 mv $RPM_BUILD_ROOT{%{_bindir},%{_sbindir}}/mysql-proxy
 
-# noarch data to /usr/share
+# noarch data to %{_datadir}
 install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/lua
 mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/proxy
 
@@ -172,6 +178,8 @@ fi
 %attr(755,root,root) %{_libdir}/%{name}/lua/mysql.so
 %attr(755,root,root) %{_libdir}/%{name}/lua/posix.so
 
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/lua
 %dir %{_datadir}/%{name}/lua/proxy
 %{_datadir}/%{name}/lua/proxy/auto-config.lua
 %{_datadir}/%{name}/lua/proxy/balance.lua
