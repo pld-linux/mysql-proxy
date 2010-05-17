@@ -15,7 +15,7 @@
 #PROXY_ADDRESS="0.0.0.0:4040"
 
 # System user to switch
-#PROXY_USER="mysql-proxy"
+#PROXY_USER="mysqlproxy"
 
 # Log options
 #PROXY_LOG_OPTIONS="--log-level=info --log-use-syslog"
