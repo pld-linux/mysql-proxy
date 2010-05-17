@@ -16,7 +16,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.0
-Release:	0.7
+Release:	0.9
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
@@ -97,7 +97,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},%{_sysconfdir}/%{name}}
+install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},%{_sysconfdir}/%{name},/var/log/{archive,}/%{name}}
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.conf
@@ -144,7 +144,11 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %dir %attr(750,root,root) %{_sysconfdir}/%{name}
 %config(noreplace) %attr(640,root,root) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/%{name}.conf
-%attr(755,root,root) %{_sbindir}/mysql-proxy
+%attr(755,root,root) %{_sbindir}/%{name}
+
+%attr(750,root,mysqlproxy) %dir /var/log/%{name}
+%attr(750,root,mysqlproxy) %dir /var/log/archive/%{name}
+
 # ??? tools?
 %attr(755,root,root) %{_bindir}/mysql-binlog-dump
 %attr(755,root,root) %{_bindir}/mysql-myisam-dump
