@@ -79,6 +79,19 @@ condrestart() {
 	start
 }
 
+flush-logs() {
+	if [ ! -f /var/lock/subsys/lighttpd ]; then
+		msg_not_running "MySQL Proxy"
+		RETVAL=7
+		return
+	fi
+
+	show "Rotating %s logs" "MySQL Proxy"
+	# send HUP to main (not angel) process to rotate logs
+	killproc --pidfile $PROXY_PID mysql-proxy -HUP
+	RETVAL=$?
+}
+
 RETVAL=0
 # See how we were called.
 case "$1" in
@@ -98,12 +111,15 @@ case "$1" in
   reload|force-reload)
 	reload
 	;;
+  flush-logs)
+	flush-logs
+	;;
   status)
 	status mysql-proxy
 	RETVAL=$?
 	;;
   *)
-	msg_usage "$0 {start|stop|restart|try-restart|reload|force-reload|status}"
+	msg_usage "$0 {start|stop|restart|try-restart|reload|force-reload|flush-logs|status}"
 	exit 3
 esac
 
