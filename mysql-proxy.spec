@@ -16,7 +16,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.0
-Release:	0.2
+Release:	0.4
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
@@ -96,7 +96,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},/var/run/mysql-proxy}
+install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
@@ -166,8 +166,6 @@ fi
 %attr(755,root,root) %{_libdir}/%{name}/plugins/libdebug.so
 %attr(755,root,root) %{_libdir}/%{name}/plugins/libproxy.so
 %attr(755,root,root) %{_libdir}/%{name}/plugins/libreplicant.so
-
-%dir %attr(775,root,mysqlproxy) /var/run/mysql-proxy
 
 # -libs
 %attr(755,root,root) %ghost %{_libdir}/libmysql-chassis-timing.so.0
