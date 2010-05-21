@@ -26,7 +26,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.0
-Release:	0.16
+Release:	0.19
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
@@ -34,6 +34,7 @@ Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{ver
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.conf
+Source4:	admin-1.lua
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -119,6 +120,8 @@ mv $RPM_BUILD_ROOT{%{_bindir},%{_sbindir}}/mysql-proxy
 # noarch data to %{_datadir}
 install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/lua
 mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/proxy
+# contrib lua
+cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/%{name}/lua/proxy
 
 rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lua/*.la
@@ -185,12 +188,7 @@ fi
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/lua
 %dir %{_datadir}/%{name}/lua/proxy
-%{_datadir}/%{name}/lua/proxy/auto-config.lua
-%{_datadir}/%{name}/lua/proxy/balance.lua
-%{_datadir}/%{name}/lua/proxy/commands.lua
-%{_datadir}/%{name}/lua/proxy/parser.lua
-%{_datadir}/%{name}/lua/proxy/test.lua
-%{_datadir}/%{name}/lua/proxy/tokenizer.lua
+%{_datadir}/%{name}/lua/proxy/*.lua
 
 %dir %{_libdir}/%{name}/plugins
 %attr(755,root,root) %{_libdir}/%{name}/plugins/libadmin.so
