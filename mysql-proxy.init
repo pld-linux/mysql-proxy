@@ -19,6 +19,7 @@ PROXY_PID="/var/run/mysql-proxy.pid"
 PROXY_ANGEL_PID="/var/run/mysql-proxy-angel.pid"
 PROXY_DEFAULTS_FILE="/etc/mysql-proxy/mysql-proxy.conf"
 PROXY_ANGEL="no"
+LUA_PATH="/usr/share/mysql-proxy/lua/proxy/?.lua"
 
 # Get service config - may override defaults
 [ -f /etc/sysconfig/mysql-proxy ] && . /etc/sysconfig/mysql-proxy
