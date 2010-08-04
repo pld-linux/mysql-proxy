@@ -1,0 +1,24 @@
+--- mysql-proxy-0.8.0/lib/Makefile.am~	2010-01-24 12:26:34.000000000 +0200
++++ mysql-proxy-0.8.0/lib/Makefile.am	2010-08-04 16:07:07.937180312 +0300
+@@ -3,7 +3,8 @@
+ SUBDIRS = proxy 
+ 
+ ## those are in the end examples or proof-of-concepts
+-example_scripts = \
++example_scriptsdir = $(luaextdir)/examples
++example_scripts_DATA = \
+ 		active-queries.lua \
+ 		active-transactions.lua \
+ 		admin-sql.lua \
+@@ -22,9 +23,9 @@
+ if USE_WRAPPER_SCRIPT
+ ## only install them if we are self-contained
+ ## otherwise let the packager decide where to put them
+-dist_doc_DATA = ${example_scripts}
++dist_doc_DATA = $(example_scripts_DATA)
+ else
+-EXTRA_DIST += ${example_scripts}
++EXTRA_DIST += $(example_scripts_DATA)
+ endif
+ 
+ luaext_LTLIBRARIES = lfs.la glib2.la chassis.la mysql.la lpeg.la posix.la

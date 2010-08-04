@@ -35,8 +35,9 @@ Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.conf
 Source4:	admin-1.lua
+Patch0:		install-examples.patch
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
-BuildRequires:	autoconf
+BuildRequires:	autoconf >= 2.62
 BuildRequires:	automake
 BuildRequires:	glib2-devel >= 1:2.4.0
 BuildRequires:	libevent-devel
@@ -81,9 +82,10 @@ zapytań... i wiele więcej.
 
 %prep
 %setup -q
+%patch0 -p1
 
-sed -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis.c
-sed -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis.c
+%{__sed} -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis.c
+%{__sed} -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis.c
 
 %build
 %{__libtoolize}
@@ -120,6 +122,7 @@ mv $RPM_BUILD_ROOT{%{_bindir},%{_sbindir}}/mysql-proxy
 # noarch data to %{_datadir}
 install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/lua
 mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/proxy
+mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/examples
 # contrib lua
 cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/%{name}/lua/proxy
 
@@ -189,6 +192,9 @@ fi
 %dir %{_datadir}/%{name}/lua
 %dir %{_datadir}/%{name}/lua/proxy
 %{_datadir}/%{name}/lua/proxy/*.lua
+%dir %{_datadir}/%{name}/lua/examples
+%{_datadir}/%{name}/lua/examples/*.lua
+%{_datadir}/%{name}/lua/examples/*.msc
 
 %dir %{_libdir}/%{name}/plugins
 %attr(755,root,root) %{_libdir}/%{name}/plugins/libadmin.so
