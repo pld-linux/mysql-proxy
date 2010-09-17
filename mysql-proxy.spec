@@ -27,8 +27,8 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.1
-Release:	0.1
-License:	GPL
+Release:	0.2
+License:	GPL v2
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
 # Source0-md5:	9e489c41f6246c24316f238b0172bef9
@@ -124,6 +124,7 @@ mv $RPM_BUILD_ROOT{%{_bindir},%{_sbindir}}/mysql-proxy
 install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/lua
 mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/proxy
 mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/examples
+mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/admin.lua
 # contrib lua
 cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/%{name}/lua/proxy
 
@@ -191,6 +192,7 @@ fi
 
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/lua
+%{_datadir}/%{name}/lua/admin.lua
 %dir %{_datadir}/%{name}/lua/proxy
 %{_datadir}/%{name}/lua/proxy/*.lua
 %dir %{_datadir}/%{name}/lua/examples
