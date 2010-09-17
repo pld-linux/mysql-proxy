@@ -18,6 +18,7 @@
 #   http://www.teonator.net/2008/11/25/drupal-read-write-splitting/
 #   http://dailyvim.blogspot.com/2008/07/mysql-high-availability-sandbox-proxy.html
 #   https://launchpad.net/mysql-sandbox
+# - move LUA_PATH to %{_datadir} chassis_frontend_get_default_lua_path()
 #
 # Conditional build:
 %bcond_with	tests		# build with tests. needs mysql server on localhost:3306
@@ -25,12 +26,12 @@
 Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
-Version:	0.8.0
-Release:	2
+Version:	0.8.1
+Release:	0.1
 License:	GPL
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
-# Source0-md5:	b6a9748d72e8db7fe3789fbdd60ff451
+# Source0-md5:	9e489c41f6246c24316f238b0172bef9
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.conf
@@ -84,8 +85,8 @@ zapytań... i wiele więcej.
 %setup -q
 %patch0 -p1
 
-%{__sed} -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis.c
-%{__sed} -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis.c
+%{__sed} -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis-frontend.c
+%{__sed} -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis-frontend.c
 
 %build
 %{__libtoolize}
@@ -207,5 +208,7 @@ fi
 %attr(755,root,root) %{_libdir}/libmysql-chassis-timing.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libmysql-chassis.so.0
 %attr(755,root,root) %{_libdir}/libmysql-chassis.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libmysql-chassis-glibext.so.0
+%attr(755,root,root) %{_libdir}/libmysql-chassis-glibext.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libmysql-proxy.so.0
 %attr(755,root,root) %{_libdir}/libmysql-proxy.so.*.*.*
