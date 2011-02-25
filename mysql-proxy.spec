@@ -27,7 +27,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.1
-Release:	0.2
+Release:	1
 License:	GPL v2
 Group:		Applications/Networking
 Source0:	http://launchpad.net/mysql-proxy/0.8/%{version}/+download/%{name}-%{version}.tar.gz
