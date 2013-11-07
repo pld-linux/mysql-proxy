@@ -88,6 +88,8 @@ zapytań... i wiele więcej.
 %{__sed} -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis-frontend.c
 %{__sed} -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis-frontend.c
 
+%{__sed} -i -e '/AM_C_PROTOTYPES/d' configure.in
+
 %build
 %{__libtoolize}
 %{__aclocal} -I m4
