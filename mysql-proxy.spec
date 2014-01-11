@@ -26,12 +26,12 @@
 Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
-Version:	0.8.3
+Version:	0.8.4
 Release:	1
 License:	GPL v2
 Group:		Applications/Networking
 Source0:	ftp://mysql.mirror.kangaroot.net/pub/mysql/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
-# Source0-md5:	ebd7e60b94665d6fd0c5374929d00b03
+# Source0-md5:	39f4743be3042db0254c2d62575264c8
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.conf
@@ -88,8 +88,6 @@ zapytań... i wiele więcej.
 %{__sed} -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis-frontend.c
 %{__sed} -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis-frontend.c
 
-%{__sed} -i -e '/AM_C_PROTOTYPES/d' configure.in
-
 %build
 %{__libtoolize}
 %{__aclocal} -I m4
@@ -115,8 +113,8 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT{/etc/{rc.d/init.d,sysconfig},%{_sysconfdir}/%{name},/var/log/{archive,}/%{name}}
 install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
-cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
-cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.conf
+cp -p %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
+cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.conf
 
 # daemon in sbindir
 install -d $RPM_BUILD_ROOT%{_sbindir}
@@ -128,19 +126,16 @@ mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/proxy
 mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/examples
 mv $RPM_BUILD_ROOT{%{_libdir},%{_datadir}}/%{name}/lua/admin.lua
 # contrib lua
-cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/%{name}/lua/proxy
+cp -p %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/%{name}/lua/proxy
 
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/*.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/lua/*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/lua/*.la
 
 # no -devel, kill
-rm -rf $RPM_BUILD_ROOT%{_includedir}
-rm -rf $RPM_BUILD_ROOT%{_libdir}/libmysql-*.la
-rm -rf $RPM_BUILD_ROOT%{_libdir}/libmysql-*.so
-rm -rf $RPM_BUILD_ROOT%{_pkgconfigdir}
-
-# put those to -tutorial package
-rm -f $RPM_BUILD_ROOT%{_datadir}/*.lua
+%{__rm} -r $RPM_BUILD_ROOT%{_includedir}
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libmysql-*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libmysql-*.so
+%{__rm} -r $RPM_BUILD_ROOT%{_pkgconfigdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
