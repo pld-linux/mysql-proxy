@@ -27,7 +27,7 @@ Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
 Version:	0.8.4
-Release:	1
+Release:	2
 License:	GPL v2
 Group:		Applications/Networking
 Source0:	ftp://mysql.mirror.kangaroot.net/pub/mysql/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
@@ -37,6 +37,7 @@ Source2:	%{name}.sysconfig
 Source3:	%{name}.conf
 Source4:	admin-1.lua
 Patch0:		install-examples.patch
+Patch1:		libevent-2.1.patch
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	autoconf >= 2.62
 BuildRequires:	automake
@@ -84,6 +85,7 @@ zapytań... i wiele więcej.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %{__sed} -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis-frontend.c
 %{__sed} -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis-frontend.c
