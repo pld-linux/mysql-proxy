@@ -1,24 +1,5 @@
 # TODO
-# - system lua-lfs for tests (LuaFileSystem 1.2)
-# - daemon does not close its std fds
-# - with keepalive=yes (angel mode) killing child with TERM sometimes does
-#   nothing and your restart has to send SIGKILL eventually, seems it's just
-#   losing the signal (some race?).
-#   clock_gettime(CLOCK_MONOTONIC, {8381139, 777478778}) = 0
-#   epoll_wait(6, {}, 8191, 962)            = 0
-#   clock_gettime(CLOCK_MONOTONIC, {8381140, 739212126}) = 0
-#   epoll_wait(6, {}, 8191, 1000)           = 0
-#   clock_gettime(CLOCK_MONOTONIC, {8381141, 742484533}) = 0
-#   - child TERM seems broken in non-angel mode as well (just loses it).
-#   - child HUP seems broken in non-angel mode as well (sees it only once).
-# - tests need fixing (can't find libs it built)
-# OLD TODO
-# - rw splitting bug: http://bugs.mysql.com/bug.php?id=36505
-#   http://jan.kneschke.de/2007/8/26/mysql-proxy-more-r-w-splitting
-#   http://www.teonator.net/2008/11/25/drupal-read-write-splitting/
-#   http://dailyvim.blogspot.com/2008/07/mysql-high-availability-sandbox-proxy.html
-#   https://launchpad.net/mysql-sandbox
-# - move LUA_PATH to %{_datadir} chassis_frontend_get_default_lua_path()
+#  - replace this package with mysql-router
 #
 # Conditional build:
 %bcond_with	tests		# build with tests. needs mysql server on localhost:3306
@@ -26,18 +7,19 @@
 Summary:	MySQL Proxy
 Summary(pl.UTF-8):	Proxy MySQL
 Name:		mysql-proxy
-Version:	0.8.4
-Release:	3
+Version:	0.8.5
+Release:	1
 License:	GPL v2
 Group:		Applications/Networking
-Source0:	ftp://mysql.mirror.kangaroot.net/pub/mysql/Downloads/MySQL-Proxy/%{name}-%{version}.tar.gz
-# Source0-md5:	39f4743be3042db0254c2d62575264c8
+Source0:	https://downloads.mysql.com/archives/get/p/21/file/%{name}-%{version}.tar.gz
+# Source0-md5:	cf31d5a2239b212f5c1c2251f8198ada
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.conf
 Source4:	admin-1.lua
 Patch0:		install-examples.patch
 Patch1:		libevent-2.1.patch
+Patch2:		mysql-5.7.patch
 URL:		http://forge.mysql.com/wiki/MySQL_Proxy
 BuildRequires:	autoconf >= 2.62
 BuildRequires:	automake
@@ -86,6 +68,7 @@ zapytań... i wiele więcej.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %{__sed} -i -e 's/g_build_filename(base_dir, "lib"/g_build_filename(base_dir, "%{_lib}"/g' src/chassis-frontend.c
 %{__sed} -i -e 's/g_build_filename(srv->base_dir, "lib"/g_build_filename(srv->base_dir, "%{_lib}"/g' src/chassis-frontend.c

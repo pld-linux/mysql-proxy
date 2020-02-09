@@ -1,0 +1,13 @@
+--- mysql-proxy-0.8.5/src/network-mysqld-packet.h~	2014-08-19 10:18:26.000000000 +0200
++++ mysql-proxy-0.8.5/src/network-mysqld-packet.h	2020-02-09 14:04:54.904336122 +0100
+@@ -27,6 +27,10 @@
+ #include "network-mysqld-proto.h"
+ #include "network-mysqld.h"
+ 
++#ifndef CLIENT_SECURE_CONNECTION
++#define CLIENT_SECURE_CONNECTION CLIENT_RESERVED2
++#endif
++
+ /**
+  * mid-level protocol 
+  *
